@@ -74,10 +74,43 @@ const Map = () => {
           const { city, color } = data;
           const element = document.createElement("div");
           element.style.color = color;
+          element.classList.add("element");
+
+          // Create the HTML content
           element.innerHTML = `
-          <div>
-            <strong style="font-size:10px;text-align:center">${city}</strong>
-          </div>`;
+            <div class="popup-wrapper">
+              <strong class="label" style="font-size:10px;text-align:center">${city}</strong>
+              <div class="popup-content">
+                <div class="sub-link">
+                  <div class="h3">expedition</div>
+                  <a href="#" class="h3">go to link</a>
+                </div>
+                <h2>1988 EXPEDITION</h2>
+                <div class="text-content">In 1997-1998, Alain Hubert and Dixie Dansercoer undertook a record breaking expedition of 3924 km in 99 days. Cutting across the continent from Princess Ranghild Mountain to the American base at McMurdo Sound, they became the first explorers to cross Antarctica without outside assistance. While breaking several other records (longest crossing, achieving over 100 kilometers in a day on foot and by ski),</div>
+                <img src="/textures/cat.webp" />
+              </div>
+            </div>`;
+
+          // Attach click event listener to the <strong> element with class "label"
+          const labelElement = element.querySelector(".label");
+          if (labelElement) {
+            labelElement.addEventListener("click", (e) => {
+              const activeElement = document.querySelector(".element.active");
+              const activePopup = activeElement?.querySelector(".active");
+
+              const target = e.target;
+              //@ts-ignore
+              const nextSibling = target.nextElementSibling;
+              element.classList.toggle("active");
+              nextSibling.classList.toggle("active");
+
+              if (activeElement !== nextSibling) {
+                activeElement?.classList.remove("active");
+                activePopup?.classList.remove("active");
+              }
+            });
+          }
+
           return element;
         }}
       />

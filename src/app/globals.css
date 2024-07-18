@@ -6,6 +6,8 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --arctic-white: #dde5ed;
+  --bright-blue: #0074f0;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,4 +22,38 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+@layer components {
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .popup-wrapper {
+    @apply cursor-pointer pointer-events-auto relative z-10;
+  }
+  .popup-content {
+    @apply absolute z-50 opacity-0 pointer-events-none scale-95 [&.active]:scale-100 [&.active]:opacity-100 [&.active]:pointer-events-auto top-0 left-full translate-x-[50px] w-[500px] bg-[--arctic-white] text-[--bright-blue] p-[10px] h-[600px] max-h-[60dvh] overflow-auto hide-scrollbar transition duration-500 ease-in-out;
+  }
+  .popup-content .label {
+    @apply cursor-pointer;
+  }
+  .popup-content .h3 {
+    @apply text-[12px] font-bold leading-normal uppercase;
+  }
+  .popup-content h2 {
+    @apply text-[32px] font-bold leading-none uppercase mb-[20px];
+  }
+  .popup-content .text-content {
+    @apply leading-[130%] mb-[30px];
+  }
+  .popup-content .sub-link {
+    @apply flex justify-between;
+  }
+  .element {
+    @apply !z-0 [&.active]:!z-10;
+  }
 }
