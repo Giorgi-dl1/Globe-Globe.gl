@@ -37,6 +37,7 @@ const Map = () => {
       lng: -90.08925929478903,
       altitude: 0.43,
       color: "#00ff33",
+      zoomIn: false,
     },
     {
       city: "New Delhi",
@@ -44,6 +45,7 @@ const Map = () => {
       lng: 77.20347613099612,
       altitude: 0.43,
       color: "#ff0000",
+      zoomIn: false,
     },
     {
       city: "New Zealand",
@@ -51,6 +53,7 @@ const Map = () => {
       lng: 172.72338919659848,
       altitude: 0.43,
       color: "#ffff00",
+      zoomIn: false,
     },
     {
       city: "Georgia",
@@ -58,6 +61,15 @@ const Map = () => {
       lng: 43.3569,
       altitude: 0.43,
       color: "#ff0000",
+      zoomIn: false,
+    },
+    {
+      city: "Antarctica",
+      lat: -88.0,
+      lng: 0.0,
+      altitude: 0,
+      color: "#0000ff",
+      zoomIn: true,
     },
   ];
 
@@ -71,13 +83,28 @@ const Map = () => {
         htmlElementsData={markersData}
         htmlAltitude="altitude"
         htmlElement={(data: any) => {
-          const { city, color } = data;
+          const { city, color, zoomIn } = data;
           const element = document.createElement("div");
           element.style.color = color;
           element.classList.add("element");
 
-          // Create the HTML content
-          element.innerHTML = `
+          if (zoomIn) {
+            element.innerHTML = `
+              <div class="relative pin-wrapper">
+                <div class="pin">
+                </div>
+                <img class="pointer" src="/assets/pin-pointer.svg" alt="pointer" />
+                <div class="pin-content-wrapper">
+                  <div class="pin-content">
+                    <img src="/textures/glacier.jpg" alt="glacier" />
+                    <h3>THE Princess <br> Elisabeth <br> Antarctica</h3>
+                  </div>
+                </div>
+              </div>
+            `;
+          } else {
+            // Create the HTML content
+            element.innerHTML = `
             <div class="popup-wrapper">
               <strong class="label" style="font-size:10px;text-align:center">${city}</strong>
               <div class="popup-content">
@@ -91,24 +118,25 @@ const Map = () => {
               </div>
             </div>`;
 
-          // Attach click event listener to the <strong> element with class "label"
-          const labelElement = element.querySelector(".label");
-          if (labelElement) {
-            labelElement.addEventListener("click", (e) => {
-              const activeElement = document.querySelector(".element.active");
-              const activePopup = activeElement?.querySelector(".active");
+            // Attach click event listener to the <strong> element with class "label"
+            const labelElement = element.querySelector(".label");
+            if (labelElement) {
+              labelElement.addEventListener("click", (e) => {
+                const activeElement = document.querySelector(".element.active");
+                const activePopup = activeElement?.querySelector(".active");
 
-              const target = e.target;
-              //@ts-ignore
-              const nextSibling = target.nextElementSibling;
-              element.classList.toggle("active");
-              nextSibling.classList.toggle("active");
+                const target = e.target;
+                //@ts-ignore
+                const nextSibling = target.nextElementSibling;
+                element.classList.toggle("active");
+                nextSibling.classList.toggle("active");
 
-              if (activeElement !== nextSibling) {
-                activeElement?.classList.remove("active");
-                activePopup?.classList.remove("active");
-              }
-            });
+                if (activeElement !== nextSibling) {
+                  activeElement?.classList.remove("active");
+                  activePopup?.classList.remove("active");
+                }
+              });
+            }
           }
 
           return element;

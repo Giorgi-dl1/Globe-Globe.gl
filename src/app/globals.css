@@ -54,6 +54,32 @@ body {
     @apply flex justify-between;
   }
   .element {
-    @apply !z-0 [&.active]:!z-10;
+    @apply !z-10 [&.active]:!z-20;
+  }
+  .pin-wrapper {
+    @apply pointer-events-auto cursor-pointer;
+  }
+  .pin-wrapper .pin {
+    @apply w-[14px] h-[14px] bg-[--bright-blue] rounded-full relative text-[--bright-blue];
+  }
+  .pin-wrapper .pin::after {
+    content: "";
+    @apply absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 w-[5px] h-[5px] bg-white rounded-full;
+  }
+  .pin-wrapper .pointer {
+    @apply absolute bottom-[30%] left-1/2 -translate-x-1/2;
+  }
+
+  .pin-wrapper .pin-content-wrapper {
+    @apply absolute border-[5px] border-[--bright-blue] bottom-full -translate-y-[20px] left-1/2 -translate-x-1/2 w-[220px] h-[220px] rounded-full bg-white;
+  }
+  .pin-wrapper .pin-content {
+    @apply relative w-full h-full;
+  }
+  .pin-wrapper .pin-content img {
+    @apply absolute top-0 left-0 w-full h-full rounded-full pointer-events-none;
+  }
+  .pin-wrapper .pin-content h3 {
+    @apply absolute right-[20px] bottom-[40px] font-bold;
   }
 }
