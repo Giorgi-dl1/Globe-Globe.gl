@@ -77,7 +77,7 @@ const Map = () => {
   ];
 
   const zoomIntoView = (lat: number, lng: number) => {
-    globeRef.current.pointOfView({ lat: +lat, lng: +lng, altitude: 2 }, 0);
+    globeRef.current.pointOfView({ lat: +lat, lng: +lng, altitude: 0.4 }, 2);
   };
 
   const antartcica = globeJson.features.filter(
