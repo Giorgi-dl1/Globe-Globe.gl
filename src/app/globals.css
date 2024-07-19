@@ -57,7 +57,7 @@ body {
     @apply !z-10 [&.active]:!z-20;
   }
   .pin-wrapper {
-    @apply pointer-events-auto cursor-pointer;
+    @apply pointer-events-auto cursor-pointer z-30;
   }
   .pin-wrapper .pin {
     @apply w-[14px] h-[14px] bg-[--bright-blue] rounded-full relative text-[--bright-blue];

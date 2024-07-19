@@ -1,8 +1,11 @@
 "use client";
 
+import { useRef } from "react";
 import Globe from "react-globe.gl";
+import globeJson from "../../public/assets/countries.json";
 
 const Map = () => {
+  const globeRef: any = useRef();
   const pointsData = [
     {
       lat: 29.953204744601763,
@@ -73,9 +76,29 @@ const Map = () => {
     },
   ];
 
+  const zoomIntoView = (lat: number, lng: number) => {
+    globeRef.current.pointOfView({ lat: +lat, lng: +lng, altitude: 2 }, 0);
+  };
+
+  const antartcica = globeJson.features.filter(
+    (item) => item.properties.name === "Antarctica"
+  );
+
   return (
     <div>
       <Globe
+        polygonsData={antartcica}
+        polygonCapColor={(geometry: any) => {
+          return ["#0000ff", "#0000cc", "#000099", "#000066"][
+            geometry.properties.abbrev_len % 4
+          ];
+        }}
+        polygonSideColor={(geometry: any) => {
+          return ["#0000ff", "#0000cc", "#000099", "#000066"][
+            geometry.properties.abbrev_len % 4
+          ];
+        }}
+        ref={globeRef}
         globeImageUrl={"/textures/00_earthmap1k.jpg"}
         pointsData={pointsData}
         pointAltitude={0.3}
@@ -83,7 +106,7 @@ const Map = () => {
         htmlElementsData={markersData}
         htmlAltitude="altitude"
         htmlElement={(data: any) => {
-          const { city, color, zoomIn } = data;
+          const { city, color, zoomIn, lat, lng } = data;
           const element = document.createElement("div");
           element.style.color = color;
           element.classList.add("element");
@@ -102,6 +125,7 @@ const Map = () => {
                 </div>
               </div>
             `;
+            element.addEventListener("click", () => zoomIntoView(lat, lng));
           } else {
             // Create the HTML content
             element.innerHTML = `
