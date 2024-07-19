@@ -99,7 +99,7 @@ const Map = () => {
           ];
         }}
         ref={globeRef}
-        globeImageUrl={"/textures/00_earthmap1k.jpg"}
+        globeImageUrl={"/textures/8081_earthmap10k.jpg"}
         pointsData={pointsData}
         pointAltitude={0.3}
         pointColor="color"
