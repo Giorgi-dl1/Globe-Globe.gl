@@ -8,6 +8,7 @@
   --background-end-rgb: 255, 255, 255;
   --arctic-white: #dde5ed;
   --bright-blue: #0074f0;
+  --orange: #ff7f41;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -54,15 +55,18 @@ body {
     @apply flex justify-between;
   }
   .element {
-    @apply !z-10 [&.active]:!z-20;
+    @apply !z-10 [&.active]:!z-20 relative;
   }
   .pin-wrapper {
     @apply pointer-events-auto cursor-pointer z-30;
   }
-  .pin-wrapper .pin {
+  .pin {
     @apply w-[14px] h-[14px] bg-[--bright-blue] rounded-full relative text-[--bright-blue];
   }
-  .pin-wrapper .pin::after {
+  .pin.orange {
+    @apply !bg-[--orange];
+  }
+  .pin::after {
     content: "";
     @apply absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 w-[5px] h-[5px] bg-white rounded-full;
   }
@@ -81,5 +85,30 @@ body {
   }
   .pin-wrapper .pin-content h3 {
     @apply absolute right-[20px] bottom-[40px] font-bold;
+  }
+  .person-pin-wrapper * {
+    @apply !text-[--orange];
+  }
+  .person-pin-wrapper .name-wrapper {
+    @apply absolute top-0 left-full flex items-start w-max;
+  }
+  .person-pin-wrapper .name-wrapper .pointer {
+    @apply translate-y-full;
+  }
+  .person-pin-wrapper .name {
+    @apply bg-white -ml-[2px] px-[4px] py-[6px] border-2 border-[--orange] rounded-[5px] font-bold uppercase;
+  }
+  .base-label {
+    @apply relative;
+  }
+
+  .base-label .base-name {
+    @apply absolute -left-[20px] uppercase bottom-full -translate-y-[13px] w-max rounded-[5px] py-[6px] px-[4px] bg-[--orange] !text-white font-bold;
+  }
+  .base-label .pointer {
+    @apply absolute bottom-full -translate-y-[4px] left-1/2 -translate-x-1/2 -rotate-90;
+  }
+  .text-label-toggle {
+    @apply [&.active]:opacity-100 [&.active]:pointer-events-auto opacity-0 pointer-events-none transition duration-300;
   }
 }
