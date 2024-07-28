@@ -45,6 +45,7 @@ const Map = () => {
       closeView: false,
       personInfo: false,
       isBase: false,
+      isRoute: false,
     },
     {
       city: "New Delhi",
@@ -56,6 +57,7 @@ const Map = () => {
       closeView: false,
       personInfo: false,
       isBase: false,
+      isRoute: false,
     },
     {
       city: "New Zealand",
@@ -67,6 +69,7 @@ const Map = () => {
       closeView: false,
       personInfo: false,
       isBase: false,
+      isRoute: false,
     },
     {
       city: "Georgia",
@@ -78,6 +81,7 @@ const Map = () => {
       closeView: false,
       personInfo: false,
       isBase: false,
+      isRoute: false,
     },
     {
       city: "Antarctica",
@@ -89,6 +93,7 @@ const Map = () => {
       closeView: false,
       personInfo: false,
       isBase: false,
+      isRoute: false,
     },
     {
       city: "Antarctica",
@@ -100,6 +105,7 @@ const Map = () => {
       closeView: true,
       personInfo: true,
       isBase: false,
+      isRoute: false,
     },
     {
       city: "Antarctica",
@@ -111,6 +117,19 @@ const Map = () => {
       closeView: true,
       personInfo: false,
       isBase: true,
+      isRoute: false,
+    },
+    {
+      city: "Antarctica",
+      lat: -95.0,
+      lng: 45.0,
+      altitude: 0,
+      color: "#0000ff",
+      zoomIn: false,
+      closeView: true,
+      personInfo: false,
+      isBase: false,
+      isRoute: true,
     },
   ];
 
@@ -197,6 +216,7 @@ const Map = () => {
             closeView,
             personInfo,
             isBase,
+            isRoute,
           } = data;
           const element = document.createElement("div");
           element.style.color = color;
@@ -225,7 +245,27 @@ const Map = () => {
             element.addEventListener("click", () => zoomIntoView(lat, lng));
           } else {
             // Check the pin type and create needed html content
-            if (isBase) {
+            if (isRoute) {
+              element.innerHTML = `
+                <div class="route">
+                  <img class="route-line" src="/expedition/line.svg" alt="line" />
+                  <img class="route-outline" src="/expedition/outline.svg" alt="outline" />
+
+                  <div class="label-flag">
+                    <div class="label blue">
+                      <img src="/expedition/flag.svg" alt="Pin" />
+                    </div>
+                  </div>
+                  <img class='label-start' src="/expedition/startpoint.svg" alt="Pin" />
+
+                  <div class="label-plus">
+                    <div class="label white">
+                      <img class='label-plus' src="/expedition/plus.svg" alt="Pin" />
+                    </div>
+                  </div>
+                </div>
+              `;
+            } else if (isBase) {
               element.innerHTML = `
               <div class="popup-wrapper base-pin-wrapper">
                 <div class="relative label base-label">

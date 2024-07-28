@@ -111,4 +111,34 @@ body {
   .text-label-toggle {
     @apply [&.active]:opacity-100 [&.active]:pointer-events-auto opacity-0 pointer-events-none transition duration-300;
   }
+  .route {
+    @apply relative w-[180px];
+  }
+  .route-line,
+  .route-outline {
+    @apply absolute left-0 w-full top-0 -translate-y-1/2;
+  }
+  .route-outline {
+    @apply opacity-[0.5];
+  }
+
+  .label-flag {
+    @apply absolute top-[-33px];
+  }
+  .label-start {
+    @apply absolute top-[6px] right-0;
+  }
+  .label-plus {
+    @apply absolute top-[-15px] left-1/2 -translate-x-1/2;
+  }
+  .label.blue {
+    @apply w-[30px] h-[30px] rounded-full border border-white bg-[--bright-blue] relative;
+  }
+  .label.white {
+    @apply w-[30px] h-[30px] rounded-full border border-[--bright-blue] bg-white relative;
+  }
+  .label.white img,
+  .label.blue img {
+    @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2;
+  }
 }
