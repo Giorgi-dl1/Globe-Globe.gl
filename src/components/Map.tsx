@@ -297,7 +297,9 @@ const Map = () => {
             if (labelElement) {
               labelElement.addEventListener("click", (e: any) => {
                 const activeElement = document.querySelector(".element.active");
-                const activePopup = activeElement?.querySelector(".active");
+                const activePopup = activeElement?.querySelector(
+                  ".popup-content.active"
+                );
 
                 const target = e.target.closest(".label") || e.target;
                 //@ts-ignore
@@ -312,9 +314,7 @@ const Map = () => {
                 if (nameWrapper) {
                   nameWrapper.classList.toggle("active");
                 }
-
-                console.log(activeElement !== newActiveElement);
-
+                console.log(activeElement);
                 if (activeElement !== newActiveElement) {
                   activeElement?.classList.remove("active");
                   activePopup?.classList.remove("active");
