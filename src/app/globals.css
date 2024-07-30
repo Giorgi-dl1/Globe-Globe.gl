@@ -57,6 +57,9 @@ body {
   .element {
     @apply !z-10 [&.active]:!z-20 relative;
   }
+  .active-visible {
+    @apply opacity-0 transition duration-500 ease-out group-[&.active]/element:opacity-100;
+  }
   .pin-wrapper {
     @apply pointer-events-auto cursor-pointer z-30;
   }

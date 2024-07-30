@@ -247,18 +247,19 @@ const Map = () => {
             // Check the pin type and create needed html content
             if (isRoute) {
               element.innerHTML = `
-                <div class="route">
-                  <img class="route-line" src="/expedition/line.svg" alt="line" />
-                  <img class="route-outline" src="/expedition/outline.svg" alt="outline" />
-
-                  <div class="label-flag">
+                <div class="route popup-wrapper group/element">
+                  <div class="active-visible">
+                    <img class="route-line" src="/expedition/line.svg" alt="line" />
+                    <img class="route-outline" src="/expedition/outline.svg" alt="outline" />
+                  </div>
+                  <img class='label-start label' src="/expedition/startpoint.svg" alt="Pin" />
+                  <div class="label-flag active-visible">
                     <div class="label blue">
                       <img src="/expedition/flag.svg" alt="Pin" />
                     </div>
                   </div>
-                  <img class='label-start' src="/expedition/startpoint.svg" alt="Pin" />
 
-                  <div class="label-plus">
+                  <div class="label-plus active-visible">
                     <div class="label white">
                       <img class='label-plus' src="/expedition/plus.svg" alt="Pin" />
                     </div>
@@ -334,7 +335,12 @@ const Map = () => {
 
             // Attach click event listener to the <strong> element with class "label"
             const labelElement = element.querySelector(".label");
-            if (labelElement) {
+            if (isRoute && labelElement) {
+              labelElement.addEventListener("click", (e: any) => {
+                const popupWrapper = element.querySelector(".popup-wrapper");
+                popupWrapper?.classList.toggle("active");
+              });
+            } else if (labelElement) {
               labelElement.addEventListener("click", (e: any) => {
                 const activeElement = document.querySelector(".element.active");
                 const activePopup = activeElement?.querySelector(
