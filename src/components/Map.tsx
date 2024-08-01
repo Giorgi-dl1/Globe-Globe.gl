@@ -1,9 +1,21 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Globe from "react-globe.gl";
 import globeJson from "../../public/assets/countries.json";
 import * as turf from "@turf/turf";
+import * as THREE from "three";
+
+const globeMaterial = new THREE.MeshPhongMaterial();
+globeMaterial.bumpScale = 4;
+new THREE.TextureLoader().load(
+  "//unpkg.com/three-globe/example/img/earth-water.png",
+  (texture) => {
+    globeMaterial.specularMap = texture;
+    globeMaterial.specular = new THREE.Color("grey");
+    globeMaterial.shininess = 15;
+  }
+);
 
 const Map = () => {
   const globeRef: any = useRef();
@@ -182,202 +194,198 @@ const Map = () => {
   //   (item) => item.properties.name === "Antarctica"
   // );
 
+  useEffect(() => {
+    const directionalLight = globeRef.current
+      .lights()
+      .find((obj3d: any) => obj3d.type === "DirectionalLight");
+    directionalLight && directionalLight.position.set(1, 1, 1); // change light position to see the specularMap's effect
+  }, []);
+
+  const renderHtmlElements = (data: any) => {
+    const {
+      city,
+      color,
+      zoomIn,
+      lat,
+      lng,
+      closeView,
+      personInfo,
+      isBase,
+      isRoute,
+    } = data;
+    const element = document.createElement("div");
+    element.style.color = color;
+    element.classList.add("element");
+
+    if (!closeView) {
+      element.classList.add("far-view");
+    } else {
+      element.classList.add("close-view");
+    }
+
+    if (zoomIn) {
+      element.innerHTML = `
+          <div class="relative pin-wrapper">
+            <div class="pin">
+            </div>
+            <img class="pointer" src="/assets/pin-pointer.svg" alt="pointer" />
+            <div class="pin-content-wrapper">
+              <div class="pin-content">
+                <img src="/textures/glacier.jpg" alt="glacier" />
+                <h3>THE Princess <br> Elisabeth <br> Antarctica</h3>
+              </div>
+            </div>
+          </div>
+        `;
+      element.addEventListener("click", () => zoomIntoView(lat, lng));
+    } else {
+      // Check the pin type and create needed html content
+      if (isRoute) {
+        element.innerHTML = `
+            <div class="route popup-wrapper group/element">
+              <div class="active-visible">
+                <img class="route-line" src="/expedition/line.svg" alt="line" />
+                <img class="route-outline" src="/expedition/outline.svg" alt="outline" />
+              </div>
+              <img class='label-start label' src="/expedition/startpoint.svg" alt="Pin" />
+              <div class="label-flag active-visible">
+                <div class="label blue">
+                  <img src="/expedition/flag.svg" alt="Pin" />
+                </div>
+              </div>
+
+              <div class="label-plus active-visible">
+                <div class="label white">
+                  <img class='label-plus' src="/expedition/plus.svg" alt="Pin" />
+                </div>
+              </div>
+            </div>
+          `;
+      } else if (isBase) {
+        element.innerHTML = `
+          <div class="popup-wrapper base-pin-wrapper">
+            <div class="relative label base-label">
+              <div class="pin orange">
+              </div>
+              <div class="text-label-toggle active">
+                <img class="pointer" src="/assets/pin-pointer-orange.svg" alt="pointer" />
+                <div class="active">
+                  <div class="base-name">
+                    beyond epica
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="popup-content">
+              <div class="sub-link">
+                <div class="h3">Baillet Latour Antarctica Fellowship</div>
+                <a href="#" class="h3">full online report</a>
+              </div>
+              <h2>Dr Kate Winter</h2>
+              <div class="text-content">In 1997-1998, Alain Hubert and Dixie Dansercoer undertook a record breaking expedition of 3924 km in 99 days. Cutting across the continent from Princess Ranghild Mountain to the American base at McMurdo Sound, they became the first explorers to cross Antarctica without outside assistance. While breaking several other records (longest crossing, achieving over 100 kilometers in a day on foot and by ski),</div>
+              <img src="/textures/cat.webp" />
+            </div>
+          </div>
+        `;
+      } else if (personInfo) {
+        element.innerHTML = `
+          <div class="popup-wrapper person-pin-wrapper">
+            <div class="relative label">
+              <img src="/assets/pin-person.svg" alt="Pin" />
+              <div class="name-wrapper text-label-toggle active">
+                <img class="pointer" src="/assets/pin-pointer-orange.svg" alt="pointer" />
+                <div class="name">
+                  dr. kate<br>winter
+                </div>
+              </div>
+            </div>
+
+            <div class="popup-content">
+              <div class="sub-link">
+                <div class="h3">Baillet Latour Antarctica Fellowship</div>
+                <a href="#" class="h3">full online report</a>
+              </div>
+              <h2>Dr Kate Winter</h2>
+              <div class="text-content">In 1997-1998, Alain Hubert and Dixie Dansercoer undertook a record breaking expedition of 3924 km in 99 days. Cutting across the continent from Princess Ranghild Mountain to the American base at McMurdo Sound, they became the first explorers to cross Antarctica without outside assistance. While breaking several other records (longest crossing, achieving over 100 kilometers in a day on foot and by ski),</div>
+              <img src="/textures/cat.webp" />
+            </div>
+          </div>
+        `;
+      } else {
+        element.innerHTML = `
+        <div class="popup-wrapper">
+          <strong class="label" style="font-size:10px;text-align:center">${city}</strong>
+          <div class="popup-content">
+            <div class="sub-link">
+              <div class="h3">expedition</div>
+              <a href="#" class="h3">go to link</a>
+            </div>
+            <h2>1988 EXPEDITION</h2>
+            <div class="text-content">In 1997-1998, Alain Hubert and Dixie Dansercoer undertook a record breaking expedition of 3924 km in 99 days. Cutting across the continent from Princess Ranghild Mountain to the American base at McMurdo Sound, they became the first explorers to cross Antarctica without outside assistance. While breaking several other records (longest crossing, achieving over 100 kilometers in a day on foot and by ski),</div>
+            <img src="/textures/cat.webp" />
+          </div>
+        </div>`;
+      }
+
+      // Attach click event listener to the <strong> element with class "label"
+      const labelElement = element.querySelector(".label");
+      if (isRoute && labelElement) {
+        labelElement.addEventListener("click", (e: any) => {
+          const popupWrapper = element.querySelector(".popup-wrapper");
+          popupWrapper?.classList.toggle("active");
+        });
+      } else if (labelElement) {
+        labelElement.addEventListener("click", (e: any) => {
+          const activeElement = document.querySelector(".element.active");
+          const activePopup = activeElement?.querySelector(
+            ".popup-content.active"
+          );
+
+          const target = e.target.closest(".label") || e.target;
+          //@ts-ignore
+          const newActiveElement = target.nextElementSibling;
+          element.classList.toggle("active");
+          newActiveElement.classList.toggle("active");
+
+          let nameWrapper = target
+            .closest(".element")
+            .querySelector(".text-label-toggle");
+
+          if (nameWrapper) {
+            nameWrapper.classList.toggle("active");
+          }
+          if (activeElement !== newActiveElement) {
+            activeElement?.classList.remove("active");
+            activePopup?.classList.remove("active");
+            const activeNameWrapper =
+              activeElement?.querySelector(".text-label-toggle");
+            if (activeNameWrapper) {
+              activeNameWrapper.classList.add("active");
+            }
+          }
+        });
+      }
+    }
+
+    return element;
+  };
+
   return (
-    <div>
-      <Globe
-        onZoom={zoomHandler}
-        atmosphereAltitude={0.15}
-        showAtmosphere={true}
-        // polygonsData={antartcica}
-        // polygonCapColor={(geometry: any) => {
-        //   return ["#0000ff", "#0000cc", "#000099", "#000066"][
-        //     geometry.properties.abbrev_len % 4
-        //   ];
-        // }}
-        // polygonSideColor={(geometry: any) => {
-        //   return ["#0000ff", "#0000cc", "#000099", "#000066"][
-        //     geometry.properties.abbrev_len % 4
-        //   ];
-        // }}
-        ref={globeRef}
-        globeImageUrl={"/textures/8081_earthmap10k.jpg"}
-        pointsData={pointsData}
-        pointAltitude={0.3}
-        pointColor="color"
-        htmlElementsData={markersData}
-        htmlAltitude="altitude"
-        htmlElement={(data: any) => {
-          const {
-            city,
-            color,
-            zoomIn,
-            lat,
-            lng,
-            closeView,
-            personInfo,
-            isBase,
-            isRoute,
-          } = data;
-          const element = document.createElement("div");
-          element.style.color = color;
-          element.classList.add("element");
-
-          if (!closeView) {
-            element.classList.add("far-view");
-          } else {
-            element.classList.add("close-view");
-          }
-
-          if (zoomIn) {
-            element.innerHTML = `
-              <div class="relative pin-wrapper">
-                <div class="pin">
-                </div>
-                <img class="pointer" src="/assets/pin-pointer.svg" alt="pointer" />
-                <div class="pin-content-wrapper">
-                  <div class="pin-content">
-                    <img src="/textures/glacier.jpg" alt="glacier" />
-                    <h3>THE Princess <br> Elisabeth <br> Antarctica</h3>
-                  </div>
-                </div>
-              </div>
-            `;
-            element.addEventListener("click", () => zoomIntoView(lat, lng));
-          } else {
-            // Check the pin type and create needed html content
-            if (isRoute) {
-              element.innerHTML = `
-                <div class="route popup-wrapper group/element">
-                  <div class="active-visible">
-                    <img class="route-line" src="/expedition/line.svg" alt="line" />
-                    <img class="route-outline" src="/expedition/outline.svg" alt="outline" />
-                  </div>
-                  <img class='label-start label' src="/expedition/startpoint.svg" alt="Pin" />
-                  <div class="label-flag active-visible">
-                    <div class="label blue">
-                      <img src="/expedition/flag.svg" alt="Pin" />
-                    </div>
-                  </div>
-
-                  <div class="label-plus active-visible">
-                    <div class="label white">
-                      <img class='label-plus' src="/expedition/plus.svg" alt="Pin" />
-                    </div>
-                  </div>
-                </div>
-              `;
-            } else if (isBase) {
-              element.innerHTML = `
-              <div class="popup-wrapper base-pin-wrapper">
-                <div class="relative label base-label">
-                  <div class="pin orange">
-                  </div>
-                  <div class="text-label-toggle active">
-                    <img class="pointer" src="/assets/pin-pointer-orange.svg" alt="pointer" />
-                    <div class="active">
-                      <div class="base-name">
-                        beyond epica
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="popup-content">
-                  <div class="sub-link">
-                    <div class="h3">Baillet Latour Antarctica Fellowship</div>
-                    <a href="#" class="h3">full online report</a>
-                  </div>
-                  <h2>Dr Kate Winter</h2>
-                  <div class="text-content">In 1997-1998, Alain Hubert and Dixie Dansercoer undertook a record breaking expedition of 3924 km in 99 days. Cutting across the continent from Princess Ranghild Mountain to the American base at McMurdo Sound, they became the first explorers to cross Antarctica without outside assistance. While breaking several other records (longest crossing, achieving over 100 kilometers in a day on foot and by ski),</div>
-                  <img src="/textures/cat.webp" />
-                </div>
-              </div>
-            `;
-            } else if (personInfo) {
-              element.innerHTML = `
-              <div class="popup-wrapper person-pin-wrapper">
-                <div class="relative label">
-                  <img src="/assets/pin-person.svg" alt="Pin" />
-                  <div class="name-wrapper text-label-toggle active">
-                    <img class="pointer" src="/assets/pin-pointer-orange.svg" alt="pointer" />
-                    <div class="name">
-                      dr. kate<br>winter
-                    </div>
-                  </div>
-                </div>
-
-                <div class="popup-content">
-                  <div class="sub-link">
-                    <div class="h3">Baillet Latour Antarctica Fellowship</div>
-                    <a href="#" class="h3">full online report</a>
-                  </div>
-                  <h2>Dr Kate Winter</h2>
-                  <div class="text-content">In 1997-1998, Alain Hubert and Dixie Dansercoer undertook a record breaking expedition of 3924 km in 99 days. Cutting across the continent from Princess Ranghild Mountain to the American base at McMurdo Sound, they became the first explorers to cross Antarctica without outside assistance. While breaking several other records (longest crossing, achieving over 100 kilometers in a day on foot and by ski),</div>
-                  <img src="/textures/cat.webp" />
-                </div>
-              </div>
-            `;
-            } else {
-              element.innerHTML = `
-            <div class="popup-wrapper">
-              <strong class="label" style="font-size:10px;text-align:center">${city}</strong>
-              <div class="popup-content">
-                <div class="sub-link">
-                  <div class="h3">expedition</div>
-                  <a href="#" class="h3">go to link</a>
-                </div>
-                <h2>1988 EXPEDITION</h2>
-                <div class="text-content">In 1997-1998, Alain Hubert and Dixie Dansercoer undertook a record breaking expedition of 3924 km in 99 days. Cutting across the continent from Princess Ranghild Mountain to the American base at McMurdo Sound, they became the first explorers to cross Antarctica without outside assistance. While breaking several other records (longest crossing, achieving over 100 kilometers in a day on foot and by ski),</div>
-                <img src="/textures/cat.webp" />
-              </div>
-            </div>`;
-            }
-
-            // Attach click event listener to the <strong> element with class "label"
-            const labelElement = element.querySelector(".label");
-            if (isRoute && labelElement) {
-              labelElement.addEventListener("click", (e: any) => {
-                const popupWrapper = element.querySelector(".popup-wrapper");
-                popupWrapper?.classList.toggle("active");
-              });
-            } else if (labelElement) {
-              labelElement.addEventListener("click", (e: any) => {
-                const activeElement = document.querySelector(".element.active");
-                const activePopup = activeElement?.querySelector(
-                  ".popup-content.active"
-                );
-
-                const target = e.target.closest(".label") || e.target;
-                //@ts-ignore
-                const newActiveElement = target.nextElementSibling;
-                element.classList.toggle("active");
-                newActiveElement.classList.toggle("active");
-
-                let nameWrapper = target
-                  .closest(".element")
-                  .querySelector(".text-label-toggle");
-
-                if (nameWrapper) {
-                  nameWrapper.classList.toggle("active");
-                }
-                console.log(activeElement);
-                if (activeElement !== newActiveElement) {
-                  activeElement?.classList.remove("active");
-                  activePopup?.classList.remove("active");
-                  const activeNameWrapper =
-                    activeElement?.querySelector(".text-label-toggle");
-                  if (activeNameWrapper) {
-                    activeNameWrapper.classList.add("active");
-                  }
-                }
-              });
-            }
-          }
-
-          return element;
-        }}
-      />
-    </div>
+    <Globe
+      ref={globeRef}
+      globeMaterial={globeMaterial}
+      globeImageUrl={"/textures/8081_earthmap10k.jpg"}
+      bumpImageUrl={"/assets/Bump.png"}
+      backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
+      onZoom={zoomHandler}
+      pointsData={pointsData}
+      pointAltitude={0.3}
+      pointColor="color"
+      htmlElementsData={markersData}
+      htmlAltitude="altitude"
+      htmlElement={(data: any) => renderHtmlElements(data)}
+    />
   );
 };
 
